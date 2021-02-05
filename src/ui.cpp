@@ -716,7 +716,9 @@ void effectPage() {
 		ImGui::SameLine();
 		if (ImGui::Button("Interpolate 0...N")) {
 			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].clearEffects(); // clear, followed by ...
 				currentBank.waves[i].interpolate(i);
+				currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
 				historyPush();
 			}
 		}

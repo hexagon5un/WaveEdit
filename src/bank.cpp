@@ -3,14 +3,14 @@
 #include <sndfile.h>
 
 
-int userBankLen = 32;//BANK_LEN_MAX;
+int userBankLen = BANK_LEN_MAX;
 int bankGridWidth = 8;
 int bankGridHeight = 8;
 
 void Bank::setBankLen(int newLen) {
 	// TODO: save samples and restore?
-	userBankLen = BANK_LEN_MAX;
-	clear();
+	// userBankLen = BANK_LEN_MAX;
+	// clear();
 	userBankLen = (newLen > BANK_LEN_MAX) ? BANK_LEN_MAX : (newLen < 1) ? 1 : newLen;
 	bankGridHeight = (userBankLen / 8);
 	if (userBankLen % 8) bankGridHeight++;

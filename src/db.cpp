@@ -13,7 +13,7 @@ static const char *api_host = "http://waveeditonline.com";
 struct BankEntry {
 
 	BankEntry()
-		: samples{new float[BANK_LEN_MAX * WAVE_LEN]()}
+		: samples{new float[DB_BANK_LEN * WAVE_LEN]()}
 	{}
 
 	~BankEntry() {
@@ -168,9 +168,15 @@ static void refresh() {
 						free(samples);
 						continue;
 					}
+					assert(BANK_LEN_MAX >= DB_BANK_LEN);
 					float *floatSamples = new float[DB_BANK_LEN * DB_WAVE_LEN];
 					i16_to_f32(samples, floatSamples, DB_BANK_LEN * DB_WAVE_LEN);
-					resample(floatSamples, DB_BANK_LEN * DB_WAVE_LEN, bankEntry.samples, BANK_LEN_MAX * WAVE_LEN, 8);
+					if (WAVE_LEN != DB_WAVE_LEN) {
+						resample(floatSamples, DB_BANK_LEN * DB_WAVE_LEN, bankEntry.samples, DB_BANK_LEN * WAVE_LEN, WAVE_LEN / DB_WAVE_LEN);
+					}
+					else {
+						memcpy(bankEntry.samples, floatSamples, sizeof(float) * DB_BANK_LEN * DB_WAVE_LEN);
+					}
 					delete[] floatSamples;
 					free(samples);
 
@@ -273,11 +279,17 @@ static void upload(std::string title, std::string attribution, std::string notes
 	json_t *notesJ = json_string(notes.c_str());
 	json_object_set_new(rootJ, "notes", notesJ);
 
+	assert(BANK_LEN_MAX >= DB_BANK_LEN);
 	// Get i16 samples
 	float *bankSamples = new float[BANK_LEN_MAX * WAVE_LEN];
 	currentBank.getPostSamples(bankSamples);
 	float *samples = new float[DB_BANK_LEN * DB_WAVE_LEN];
-	resample(bankSamples, BANK_LEN_MAX * WAVE_LEN, samples, DB_BANK_LEN * DB_WAVE_LEN, 0.125);
+	if (WAVE_LEN != DB_WAVE_LEN) {
+		resample(bankSamples, BANK_LEN_MAX * WAVE_LEN, samples, DB_BANK_LEN * DB_WAVE_LEN, DB_WAVE_LEN / WAVE_LEN);
+	}
+	else {
+		memcpy(samples, bankSamples, sizeof(float) * DB_BANK_LEN * DB_WAVE_LEN);
+	}
 	int16_t *samples_i16 = new int16_t[DB_BANK_LEN * DB_WAVE_LEN];
 	f32_to_i16(samples, samples_i16, DB_BANK_LEN * DB_WAVE_LEN);
 	delete[] samples;
@@ -425,7 +437,7 @@ void dbPage() {
 		else {
 			for (BankEntry &bankEntry : bankEntries) {
 				ImGui::PushID(bankEntry.uuid.c_str());
-				renderWave("", 140.0, NULL, 0, bankEntry.samples, BANK_LEN_MAX * WAVE_LEN, NO_TOOL);
+				renderWave("", 140.0, NULL, 0, bankEntry.samples, DB_BANK_LEN * WAVE_LEN, NO_TOOL);
 				ImGui::SameLine();
 				ImGui::BeginGroup();
 				{
