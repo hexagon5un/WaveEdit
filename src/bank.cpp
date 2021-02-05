@@ -3,6 +3,25 @@
 #include <sndfile.h>
 
 
+int userBankLen = 32;//BANK_LEN_MAX;
+int bankGridWidth = 8;
+int bankGridHeight = 8;
+
+void Bank::setBankLen(int newLen) {
+	// TODO: save samples and restore?
+	userBankLen = BANK_LEN_MAX;
+	clear();
+	userBankLen = (newLen > BANK_LEN_MAX) ? BANK_LEN_MAX : (newLen < 1) ? 1 : newLen;
+	bankGridHeight = (userBankLen / 8);
+	if (userBankLen % 8) bankGridHeight++;
+}
+
+
+int Bank::getBankLen() {
+	return BANK_LEN;
+}
+
+
 void Bank::clear() {
 	// The lazy way
 	memset(this, 0, sizeof(Bank));
@@ -78,7 +97,7 @@ void Bank::load(const char *filename) {
 
 void Bank::saveWAV(const char *filename) {
 	SF_INFO info;
-	info.samplerate = 48000;
+	info.samplerate = 44100;
 	info.channels = 1;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16 | SF_ENDIAN_LITTLE;
 	SNDFILE *sf = sf_open(filename, SFM_WRITE, &info);
@@ -88,6 +107,7 @@ void Bank::saveWAV(const char *filename) {
 	for (int j = 0; j < BANK_LEN; j++) {
 		sf_write_float(sf, waves[j].postSamples, WAVE_LEN);
 	}
+	sf_write_float(sf, waves[0].postSamples, 1); // + 1 sample from the start
 
 	sf_close(sf);
 }

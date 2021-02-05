@@ -120,7 +120,7 @@ unsigned char *base64_decode(const unsigned char *src, size_t len, size_t *out_l
 // wave.cpp
 ////////////////////
 
-#define WAVE_LEN 1024
+#define WAVE_LEN 256
 
 enum EffectID {
 	PRE_GAIN,
@@ -161,6 +161,7 @@ struct Wave {
 	void commitSamples();
 	void commitHarmonics();
 	void clearEffects();
+	void interpolate(int index);
 	/** Applies effects to the sample array and resets the effect parameters */
 	void bakeEffects();
 	void randomizeEffects();
@@ -178,12 +179,20 @@ extern bool clipboardActive;
 // bank.cpp
 ////////////////////
 
-#define BANK_LEN 16
-#define BANK_GRID_WIDTH 8
-#define BANK_GRID_HEIGHT 8
+extern int userBankLen; // user specified length, up to BANK_LEN
+extern int bankGridWidth; // 8
+extern int bankGridHeight; // userBankLen / bankGridWidth
+
+#define BANK_LEN_MAX 128
+#define BANK_LEN userBankLen
+#define BANK_GRID_WIDTH bankGridWidth
+#define BANK_GRID_HEIGHT bankGridHeight
 
 struct Bank {
-	Wave waves[BANK_LEN];
+	Wave waves[BANK_LEN_MAX];
+
+	void setBankLen(int newLen);
+	int getBankLen();
 
 	void clear();
 	void swap(int i, int j);

@@ -207,6 +207,38 @@ void Wave::updatePost() {
 	}
 }
 
+void Wave::interpolate(int index) {
+	if (index <= 0 || index >= BANK_LEN - 1) {
+		return;
+	}
+
+	float out[WAVE_LEN];
+	memcpy(out, samples, sizeof(float) * WAVE_LEN);
+
+	float z = (float)index / BANK_LEN;
+	for (int i = 0; i < WAVE_LEN; i++) {
+		out[i] = crossf(
+			currentBank.waves[0].postSamples[i],
+			currentBank.waves[BANK_LEN - 1].postSamples[i],
+			z);
+	}
+
+	for (int i = 0; i < WAVE_LEN; i++) {
+		out[i] = clampf(out[i], -1.0, 1.0);
+	}
+
+	// TODO Fix possible race condition with audio thread here
+	// Or not, because the race condition would only just replace samples as they are being read, which just gives a click sound.
+	memcpy(postSamples, out, sizeof(float)*WAVE_LEN);
+
+	// Convert wave to spectrum
+	RFFT(postSamples, postSpectrum, WAVE_LEN);
+	// Convert spectrum to harmonics
+	for (int i = 0; i < WAVE_LEN / 2; i++) {
+		postHarmonics[i] = hypotf(postSpectrum[2 * i], postSpectrum[2 * i + 1]) * 2.0;
+	}
+}
+
 void Wave::commitSamples() {
 	// Convert wave to spectrum
 	RFFT(samples, spectrum, WAVE_LEN);
@@ -272,7 +304,7 @@ void Wave::randomizeEffects() {
 
 void Wave::saveWAV(const char *filename) {
 	SF_INFO info;
-	info.samplerate = 48000;
+	info.samplerate = 44100;
 	info.channels = 1;
 	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16 | SF_ENDIAN_LITTLE;
 	SNDFILE *sf = sf_open(filename, SFM_WRITE, &info);

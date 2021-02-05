@@ -465,6 +465,17 @@ void renderPreview() {
 	ImGui::SameLine();
 	ImGui::PushItemWidth(300.0);
 	ImGui::SliderFloat("##playVolume", &playVolume, -60.0f, 0.0f, "Volume: %.2f dB");
+
+	ImGui::SameLine();
+	ImGui::PushItemWidth(120.0);
+	int bankLen = currentBank.getBankLen();
+	ImGui::InputInt("Frames", &bankLen);
+	// ImGui::PopItemWidth();
+	bankLen = bankLen < 1 ? 1 : bankLen > BANK_LEN_MAX ? BANK_LEN_MAX : bankLen;
+	if (bankLen != currentBank.getBankLen()) {
+		currentBank.setBankLen(bankLen);
+	}
+
 	ImGui::PushItemWidth(-1.0);
 	ImGui::SameLine();
 	ImGui::SliderFloat("##playFrequency", &playFrequency, 1.0f, 10000.0f, "Frequency: %.2f Hz", 0.0f);
@@ -699,6 +710,13 @@ void effectPage() {
 			for (int i = 0; i < BANK_LEN; i++) {
 				currentBank.waves[i].normalize = false;
 				currentBank.waves[i].updatePost();
+				historyPush();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Interpolate 0...N")) {
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].interpolate(i);
 				historyPush();
 			}
 		}

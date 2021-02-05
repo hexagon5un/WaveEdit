@@ -1,5 +1,7 @@
 #include "WaveEdit.hpp"
 
+#include <iostream>
+
 #include "imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
@@ -285,8 +287,9 @@ static void waveMenu() {
 
 
 void renderBankGrid(const char *name, float height, int gridWidth, float *gridX, float *gridY) {
-	assert(BANK_LEN % gridWidth == 0);
+	//assert(BANK_LEN % gridWidth == 0);
 	int gridHeight = BANK_LEN / gridWidth;
+	if (BANK_LEN % gridWidth) gridHeight++;
 
 	ImGuiContext &g = *GImGui;
 	ImGuiWindow *window = ImGui::GetCurrentWindow();
@@ -368,12 +371,29 @@ void renderBankGrid(const char *name, float height, int gridWidth, float *gridX,
 		ImVec2 cellPos = g.IO.MousePos - cellSize / 2.0;
 		gridPos.x = clampf(rescalef(cellPos.x, box.Min.x, box.Max.x, 0.0, gridWidth), 0, gridWidth - 1);
 		gridPos.y = clampf(rescalef(cellPos.y, box.Min.y, box.Max.y, 0.0, gridHeight), 0, gridHeight - 1);
+
 		// Block select
 		int clickedId = (int)roundf(gridPos.y) * gridWidth + (int)roundf(gridPos.x);
 
+		if (clickedId >= BANK_LEN) {
+			gridPos.y = gridHeight - 1;
+			gridPos.x = BANK_LEN % gridWidth ? (BANK_LEN % gridWidth) - 1 : 0; // TODO this sucks
+		}
+
+		int nextX = (int)roundf(gridPos.y) * gridWidth + (int)roundf(gridPos.x + 0.5);
+		if (nextX >= BANK_LEN) {
+			gridPos.x = (int)floorf(gridPos.x);
+		}
+
+		int nextY = (int)roundf(gridPos.y + 0.5) * gridWidth + (int)roundf(gridPos.x);
+		if (nextY >= BANK_LEN) {
+			gridPos.y = (int)floorf(gridPos.y);
+		}
+		// std::cout << gridPos.x << ", " << gridPos.y << std::endl;
+
 		// Ctrl-click dragging buffers
 		static Bank dragBank;
-		static Wave dragWaves[BANK_LEN];
+		static Wave dragWaves[BANK_LEN_MAX];
 		static int dragId, dragStart, dragEnd;
 		if (g.IO.KeyCtrl && !g.IO.MouseReleased[0]) {
 			if (g.IO.MouseClicked[0]) {

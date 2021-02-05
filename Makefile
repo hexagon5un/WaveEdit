@@ -1,4 +1,4 @@
-VERSION = 1.PRO3
+VERSION = TW_0.1
 
 FLAGS = -Wall -Wextra -Wno-unused-parameter -g -Wno-unused -O3 -march=nocona -ffast-math \
 	-DVERSION=$(VERSION) -DPFFFT_SIMD_DISABLE \
