@@ -177,6 +177,17 @@ static void menuSaveBankAs() {
 	free(dir);
 }
 
+static void menuSaveBankAsEFE() {
+	char *dir = getLastDir();
+	char *path = osdialog_file(OSDIALOG_SAVE, dir, "Untitled.efe", NULL);
+	if (path) {
+		currentBank.saveEFE(path);
+		snprintf(lastFilename, sizeof(lastFilename), "%s", path);
+		free(path);
+	}
+	free(dir);
+}
+
 static void menuSaveBank() {
 	if (lastFilename[0] != '\0')
 		currentBank.saveWAV(lastFilename);
@@ -398,6 +409,8 @@ void renderMenu() {
 				menuSaveBank();
 			if (ImGui::MenuItem("Save Bank As...", ImGui::GetIO().OSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S"))
 				menuSaveBankAs();
+			// if (ImGui::MenuItem("Save Bank As Transwave EFE...", NULL))
+			// 	menuSaveBankAsEFE();
 			if (ImGui::MenuItem("Save Waves to Folder...", NULL))
 				menuSaveWaves();
 			if (ImGui::MenuItem("Quit", ImGui::GetIO().OSXBehaviors ? "Cmd+Q" : "Ctrl+Q"))
@@ -671,6 +684,11 @@ void effectHistogram(EffectID effect, Tool tool) {
 }
 
 
+struct InterpExtents {
+	int start;
+	int end;
+};
+
 void effectPage() {
 	ImGui::BeginChild("Effect Editor", ImVec2(0, 0), true); {
 		static Tool tool = PENCIL_TOOL;
@@ -714,10 +732,44 @@ void effectPage() {
 			}
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Interpolate 0...N")) {
+		if (ImGui::Button("Morph 0...END")) {
 			for (int i = 0; i < BANK_LEN; i++) {
 				currentBank.waves[i].clearEffects(); // clear, followed by ...
 				currentBank.waves[i].interpolate(i);
+				currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
+				historyPush();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Morph non-zero")) {
+			std::vector<InterpExtents> extents;
+			int start = 0;
+			for (int i = 0; i < BANK_LEN; i++) {
+				if (!i) continue;
+				if ((i < BANK_LEN - 1) && currentBank.waves[i].isClear()) ;
+				else {
+					extents.push_back({start, i});
+					start = i;
+				}
+			}
+			int cur = 0; // don't process a frame twice
+			for (auto it = extents.begin(); it < extents.end(); it++) {
+				auto& e = *it;
+				for (int i = cur; i <= e.end; i++) {
+					currentBank.waves[i].clearEffects(); // clear, followed by ...
+					currentBank.waves[i].interpolate(i, e.start, e.end);
+					currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
+					historyPush();
+					cur = i + 1;
+				}
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Morph adjacent")) {
+			// interpolate like in z-morph playback
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].clearEffects(); // clear, followed by ...
+				currentBank.waves[i].interpolate(i, i, i + 1);
 				currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
 				historyPush();
 			}

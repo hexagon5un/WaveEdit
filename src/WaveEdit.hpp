@@ -156,12 +156,13 @@ struct Wave {
 	bool normalize;
 
 	void clear();
+	bool isClear();
 	/** Generates post arrays from the sample array, by applying effects */
 	void updatePost();
 	void commitSamples();
 	void commitHarmonics();
 	void clearEffects();
-	void interpolate(int index);
+	void interpolate(int index, int start = -1, int end = -1);
 	/** Applies effects to the sample array and resets the effect parameters */
 	void bakeEffects();
 	void randomizeEffects();
@@ -209,6 +210,8 @@ struct Bank {
 	void loadWAV(const char *filename);
 	/** Saves each wave to its own file in a directory */
 	void saveWaves(const char *dirname);
+	/** Save EFE file for Transwave */
+	void saveEFE(const char *filename);
 };
 
 

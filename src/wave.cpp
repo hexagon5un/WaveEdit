@@ -27,6 +27,15 @@ void Wave::clear() {
 	memset(this, 0, sizeof(Wave));
 }
 
+
+bool Wave::isClear() {
+	for (int i = 0; i < WAVE_LEN; i++) {
+		if (postSamples[i] != 0.) return false;
+	}
+	return true;
+}
+
+
 void Wave::updatePost() {
 	float out[WAVE_LEN];
 	memcpy(out, samples, sizeof(float) * WAVE_LEN);
@@ -207,20 +216,43 @@ void Wave::updatePost() {
 	}
 }
 
-void Wave::interpolate(int index) {
-	if (index <= 0 || index >= BANK_LEN - 1) {
+void Wave::interpolate(int index, int start, int end) {
+	bool fullRange = (start == -1 && end == -1);
+
+	if (fullRange && (index <= 0 || index >= BANK_LEN - 1)) {
 		return;
 	}
 
-	float out[WAVE_LEN];
-	memcpy(out, samples, sizeof(float) * WAVE_LEN);
+	if (fullRange || (end < start)) {
+		start = 0;
+		end = BANK_LEN - 1;
+	}
 
-	float z = (float)index / BANK_LEN;
-	for (int i = 0; i < WAVE_LEN; i++) {
-		out[i] = crossf(
-			currentBank.waves[0].postSamples[i],
-			currentBank.waves[BANK_LEN - 1].postSamples[i],
-			z);
+	end = (end < 0) ? 0 : (end > BANK_LEN - 1) ? BANK_LEN - 1 : end;
+
+	int range = end - start;
+	if (!range) return;
+
+	float z = (float)(index - start) / range;
+
+	float out[WAVE_LEN];
+	if (range > 1) {
+		for (int i = 0; i < WAVE_LEN; i++) {
+			out[i] = crossf(
+				currentBank.waves[start].postSamples[i],
+				currentBank.waves[end].postSamples[i],
+				z);
+		}
+	}
+	else {
+		for (int i = 0; i < WAVE_LEN; i++) {
+			float z2 = (float)i / (WAVE_LEN - 1) * 0.5;
+			if (index != start) z2 += 0.5;
+			out[i] = crossf(
+				currentBank.waves[start].postSamples[i],
+				currentBank.waves[end].postSamples[i],
+				z2);
+		}
 	}
 
 	for (int i = 0; i < WAVE_LEN; i++) {
