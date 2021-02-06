@@ -12,6 +12,7 @@ void Bank::setBankLen(int newLen) {
 	// userBankLen = BANK_LEN_MAX;
 	// clear();
 	userBankLen = (newLen > BANK_LEN_MAX) ? BANK_LEN_MAX : (newLen < 1) ? 1 : newLen;
+	bankLen = userBankLen;
 	bankGridHeight = (userBankLen / 8);
 	if (userBankLen % 8) bankGridHeight++;
 }
@@ -92,6 +93,7 @@ void Bank::load(const char *filename) {
 	for (int j = 0; j < BANK_LEN; j++) {
 		waves[j].commitSamples();
 	}
+	setBankLen(bankLen);
 }
 
 

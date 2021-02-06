@@ -191,6 +191,7 @@ extern int bankGridHeight; // userBankLen / bankGridWidth
 
 struct Bank {
 	Wave waves[BANK_LEN_MAX];
+	int bankLen;
 
 	void setBankLen(int newLen);
 	int getBankLen();
@@ -212,6 +213,8 @@ struct Bank {
 	void saveWaves(const char *dirname);
 	/** Save EFE file for Transwave */
 	void saveEFE(const char *filename);
+
+	Bank() : bankLen{userBankLen} {}
 };
 
 
