@@ -736,6 +736,8 @@ void effectPage() {
 			for (int i = 0; i < BANK_LEN; i++) {
 				currentBank.waves[i].clearEffects(); // clear, followed by ...
 				currentBank.waves[i].interpolate(i);
+			}
+			for (int i = 0; i < BANK_LEN; i++) {
 				currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
 				historyPush();
 			}
@@ -752,16 +754,18 @@ void effectPage() {
 					start = i;
 				}
 			}
-			int cur = 0; // don't process a frame twice
 			for (auto it = extents.begin(); it < extents.end(); it++) {
 				auto& e = *it;
-				for (int i = cur; i <= e.end; i++) {
-					currentBank.waves[i].clearEffects(); // clear, followed by ...
-					currentBank.waves[i].interpolate(i, e.start, e.end);
-					currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
-					historyPush();
-					cur = i + 1;
+				if (e.end - e.start > 1) {
+					for (int i = e.start; i <= e.end; i++) {
+						currentBank.waves[i].clearEffects(); // clear, followed by ...
+						currentBank.waves[i].interpolate(i, e.start, e.end);
+					}
 				}
+			}
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
+				historyPush();
 			}
 		}
 		ImGui::SameLine();
@@ -770,6 +774,8 @@ void effectPage() {
 			for (int i = 0; i < BANK_LEN; i++) {
 				currentBank.waves[i].clearEffects(); // clear, followed by ...
 				currentBank.waves[i].interpolate(i, i, i + 1);
+			}
+			for (int i = 0; i < BANK_LEN; i++) {
 				currentBank.waves[i].bakeEffects(); // ... bake here seems to make sense
 				historyPush();
 			}
