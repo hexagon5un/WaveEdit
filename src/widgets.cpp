@@ -527,7 +527,7 @@ void renderWaterfall(const char *name, float height, float amplitude, float angl
 			float value = currentBank.waves[b].samples[i];
 			ImVec2 a = ImVec2(rescalef(i, 0, WAVE_LEN-1, -1.0, 1.0), rescalef(b, 0, BANK_LEN-1, -1.0, 1.0));
 			a = ImRotate(a, cosf(theta), sinf(theta)) / M_SQRT2;
-			a.y += -amplitude * 0.3 * value;
+			a.y += amplitude * 0.3 * value;
 			ImVec2 point = ImVec2(rescalef(a.x, -1.0, 1.0, box.Min.x, box.Max.x), rescalef(a.y, 1.0, -1.0, box.Min.y, box.Max.y));
 			points[i] = point;
 		}
@@ -542,7 +542,7 @@ void renderWaterfall(const char *name, float height, float amplitude, float angl
 			float value = currentBank.waves[b].postSamples[i];
 			ImVec2 a = ImVec2(rescalef(i, 0, WAVE_LEN-1, -1.0, 1.0), rescalef(b, 0, BANK_LEN-1, -1.0, 1.0));
 			a = ImRotate(a, cosf(theta), sinf(theta)) / M_SQRT2;
-			a.y += -amplitude * 0.3 * value;
+			a.y += amplitude * 0.3 * value;
 			ImVec2 point = ImVec2(rescalef(a.x, -1.0, 1.0, box.Min.x, box.Max.x), rescalef(a.y, 1.0, -1.0, box.Min.y, box.Max.y));
 			points[i] = point;
 		}
