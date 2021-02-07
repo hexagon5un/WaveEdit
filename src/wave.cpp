@@ -245,9 +245,10 @@ void Wave::interpolate(int index, int start, int end) {
 		}
 	}
 	else {
+		if (index != start) return;
+
 		for (int i = 0; i < WAVE_LEN; i++) {
-			float z2 = (float)i / (WAVE_LEN - 1) * 0.5;
-			if (index != start) z2 += 0.5;
+			float z2 = (float)i / (WAVE_LEN - 1);
 			out[i] = crossf(
 				currentBank.waves[start].samples[i],
 				currentBank.waves[end].samples[i],
