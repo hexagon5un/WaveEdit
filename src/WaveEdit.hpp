@@ -214,7 +214,9 @@ struct Bank {
 	/** Save EFE file for Transwave */
 	void saveEFE(const char *filename);
 
-	Bank() : bankLen{userBankLen} {}
+	Bank() {
+		setBankLen(BANK_LEN_MAX);
+	}
 };
 
 

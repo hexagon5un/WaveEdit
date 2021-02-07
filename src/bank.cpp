@@ -25,7 +25,7 @@ int Bank::getBankLen() {
 
 void Bank::clear() {
 	// The lazy way
-	memset(this, 0, sizeof(Bank));
+	memset(waves, 0, sizeof(waves));
 
 	for (int i = 0; i < BANK_LEN; i++) {
 		waves[i].commitSamples();
@@ -93,7 +93,7 @@ void Bank::load(const char *filename) {
 	for (int j = 0; j < BANK_LEN; j++) {
 		waves[j].commitSamples();
 	}
-	setBankLen(bankLen);
+	setBankLen(bankLen ? bankLen : BANK_LEN_MAX);
 }
 
 
