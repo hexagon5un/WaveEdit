@@ -228,19 +228,20 @@ void Wave::interpolate(int index, int start, int end) {
 		end = BANK_LEN - 1;
 	}
 
-	end = (end < 0) ? 0 : (end > BANK_LEN - 1) ? BANK_LEN - 1 : end;
-
 	int range = end - start;
 	if (!range) return;
 
 	float z = (float)(index - start) / range;
 
+	int s = (start < 0) ? 0 : start;
+	int e = (end > BANK_LEN - 1) ? BANK_LEN - 1 : end;
+
 	float out[WAVE_LEN];
 	if (range > 1) {
 		for (int i = 0; i < WAVE_LEN; i++) {
 			out[i] = crossf(
-				currentBank.waves[start].samples[i],
-				currentBank.waves[end].samples[i],
+				currentBank.waves[s].samples[i],
+				currentBank.waves[e].samples[i],
 				z);
 		}
 	}
@@ -250,8 +251,8 @@ void Wave::interpolate(int index, int start, int end) {
 		for (int i = 0; i < WAVE_LEN; i++) {
 			float z2 = (float)i / (WAVE_LEN - 1);
 			out[i] = crossf(
-				currentBank.waves[start].samples[i],
-				currentBank.waves[end].samples[i],
+				currentBank.waves[s].samples[i],
+				currentBank.waves[e].samples[i],
 				z2);
 		}
 	}
