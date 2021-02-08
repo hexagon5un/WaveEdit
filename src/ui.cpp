@@ -485,8 +485,9 @@ void renderPreview() {
 	ImGui::InputInt("Frames", &bankLen);
 	// ImGui::PopItemWidth();
 	bankLen = bankLen < 1 ? 1 : bankLen > BANK_LEN_MAX ? BANK_LEN_MAX : bankLen;
-	if (bankLen != currentBank.getBankLen()) {
-		currentBank.setBankLen(bankLen);
+	if (bankLen != BANK_LEN) {
+		setGlobalBankLen(bankLen);
+		historyPush();
 	}
 
 	ImGui::PushItemWidth(-1.0);

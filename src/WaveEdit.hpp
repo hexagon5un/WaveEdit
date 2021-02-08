@@ -180,6 +180,8 @@ extern bool clipboardActive;
 // bank.cpp
 ////////////////////
 
+void setGlobalBankLen(int newLen);
+
 extern int userBankLen; // user specified length, up to BANK_LEN
 extern int bankGridWidth; // 8
 extern int bankGridHeight; // userBankLen / bankGridWidth
@@ -214,9 +216,8 @@ struct Bank {
 	/** Save EFE file for Transwave */
 	void saveEFE(const char *filename);
 
-	Bank() {
-		setBankLen(BANK_LEN_MAX);
-	}
+	Bank() : bankLen{BANK_LEN_MAX} {}
+
 };
 
 

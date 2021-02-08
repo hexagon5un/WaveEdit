@@ -7,19 +7,24 @@ int userBankLen = BANK_LEN_MAX;
 int bankGridWidth = 8;
 int bankGridHeight = 8;
 
-void Bank::setBankLen(int newLen) {
-	// TODO: save samples and restore?
-	// userBankLen = BANK_LEN_MAX;
-	// clear();
+void setGlobalBankLen(int newLen) {
+	if (newLen == userBankLen) return;
+
 	userBankLen = (newLen > BANK_LEN_MAX) ? BANK_LEN_MAX : (newLen < 1) ? 1 : newLen;
-	bankLen = userBankLen;
 	bankGridHeight = (userBankLen / 8);
 	if (userBankLen % 8) bankGridHeight++;
+
+	currentBank.setBankLen(userBankLen);
+}
+
+
+void Bank::setBankLen(int newLen) {
+	bankLen = newLen;
 }
 
 
 int Bank::getBankLen() {
-	return BANK_LEN;
+	return bankLen;
 }
 
 
@@ -93,7 +98,7 @@ void Bank::load(const char *filename) {
 	for (int j = 0; j < BANK_LEN; j++) {
 		waves[j].commitSamples();
 	}
-	setBankLen(bankLen ? bankLen : BANK_LEN_MAX);
+	setGlobalBankLen(bankLen ? bankLen : BANK_LEN_MAX);
 }
 
 

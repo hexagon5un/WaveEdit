@@ -1,7 +1,5 @@
 #include "WaveEdit.hpp"
 
-#include <iostream>
-
 #include "imgui.h"
 #define IMGUI_DEFINE_MATH_OPERATORS
 #include "imgui_internal.h"
@@ -389,7 +387,6 @@ void renderBankGrid(const char *name, float height, int gridWidth, float *gridX,
 		if (nextY >= BANK_LEN) {
 			gridPos.y = (int)floorf(gridPos.y);
 		}
-		// std::cout << gridPos.x << ", " << gridPos.y << std::endl;
 
 		// Ctrl-click dragging buffers
 		static Bank dragBank;
