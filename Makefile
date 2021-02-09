@@ -1,4 +1,4 @@
-VERSION = TW_0.2
+VERSION = TW_0.3
 
 FLAGS = -Wall -Wextra -Wno-unused-parameter -g -Wno-unused -O3 -march=nocona -ffast-math \
 	-DVERSION=$(VERSION) -DPFFFT_SIMD_DISABLE \
@@ -82,7 +82,7 @@ dist: WaveEdit
 	cp LICENSE* dist/WaveEdit
 	cp doc/manual.pdf dist/WaveEdit
 ifeq ($(ARCH),lin)
-	cp -R logo*.png fonts catalog dist/WaveEdit
+	cp -R logo*.png header.eps fonts catalog dist/WaveEdit
 	cp WaveEdit WaveEdit.sh dist/WaveEdit
 	cp dep/lib/libSDL2-2.0.so.0 dist/WaveEdit
 	cp dep/lib/libsamplerate.so.0 dist/WaveEdit
@@ -94,7 +94,7 @@ else ifeq ($(ARCH),mac)
 	mkdir -p dist/WaveEdit/WaveEdit.app/Contents/Resources
 	cp Info.plist dist/WaveEdit/WaveEdit.app/Contents
 	cp WaveEdit dist/WaveEdit/WaveEdit.app/Contents/MacOS
-	cp -R logo*.png logo.icns fonts catalog dist/WaveEdit/WaveEdit.app/Contents/Resources
+	cp -R logo*.png logo.icns header.eps fonts catalog dist/WaveEdit/WaveEdit.app/Contents/Resources
 	# Remap dylibs in executable
 	otool -L dist/WaveEdit/WaveEdit.app/Contents/MacOS/WaveEdit
 	cp dep/lib/libSDL2-2.0.0.dylib dist/WaveEdit/WaveEdit.app/Contents/MacOS
@@ -109,7 +109,7 @@ else ifeq ($(ARCH),mac)
 	install_name_tool -change $(PWD)/dep/lib/libcurl.4.dylib @executable_path/libcurl.4.dylib dist/WaveEdit/WaveEdit.app/Contents/MacOS/WaveEdit
 	otool -L dist/WaveEdit/WaveEdit.app/Contents/MacOS/WaveEdit
 else ifeq ($(ARCH),win)
-	cp -R logo*.png fonts catalog dist/WaveEdit
+	cp -R logo*.png header.eps fonts catalog dist/WaveEdit
 	cp WaveEdit.exe dist/WaveEdit
 	cp /mingw32/bin/libgcc_s_dw2-1.dll dist/WaveEdit
 	cp /mingw32/bin/libwinpthread-1.dll dist/WaveEdit

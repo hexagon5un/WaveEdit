@@ -409,8 +409,8 @@ void renderMenu() {
 				menuSaveBank();
 			if (ImGui::MenuItem("Save Bank As...", ImGui::GetIO().OSXBehaviors ? "Cmd+Shift+S" : "Ctrl+Shift+S"))
 				menuSaveBankAs();
-			// if (ImGui::MenuItem("Save Bank As Transwave EFE...", NULL))
-			// 	menuSaveBankAsEFE();
+			if (ImGui::MenuItem("Save Bank As Transwave EFE...", NULL))
+				menuSaveBankAsEFE();
 			if (ImGui::MenuItem("Save Waves to Folder...", NULL))
 				menuSaveWaves();
 			if (ImGui::MenuItem("Quit", ImGui::GetIO().OSXBehaviors ? "Cmd+Q" : "Ctrl+Q"))

@@ -119,13 +119,16 @@ void Bank::saveWAV(const char *filename) {
 	sf_close(sf);
 }
 
-
+#include <fstream>
 void Bank::saveEFE(const char *filename) {
+	std::string tmpName{filename};
+	tmpName += "_tmp.wav";
+
 	SF_INFO info;
 	info.samplerate = 44100;
 	info.channels = 1;
-	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16 | SF_ENDIAN_LITTLE;
-	SNDFILE *sf = sf_open(filename, SFM_WRITE, &info);
+	info.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16 | SF_ENDIAN_BIG;
+	SNDFILE *sf = sf_open(tmpName.c_str(), SFM_WRITE, &info);
 	if (!sf)
 		return;
 
@@ -136,7 +139,11 @@ void Bank::saveEFE(const char *filename) {
 
 	sf_close(sf);
 
-	// now convert to EFE using ...
+	std::vector<char> efeData = wavToEfe(tmpName.c_str());
+	remove(tmpName.c_str());
+
+	std::ofstream efeFile(filename, std::ios::binary);
+	efeFile.write(efeData.data(), efeData.size());
 }
 
 

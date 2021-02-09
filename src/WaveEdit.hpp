@@ -333,3 +333,11 @@ void dbPage();
 ////////////////////
 
 void importPage();
+
+
+////////////////////
+// efe.cpp
+////////////////////
+
+void efeInit();
+std::vector<char> wavToEfe(const char *wavFilename);

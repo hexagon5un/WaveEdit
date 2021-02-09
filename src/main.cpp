@@ -84,6 +84,7 @@ int main(int argc, char **argv) {
 	catalogInit();
 	audioInit();
 	dbInit();
+	efeInit();
 
 	// Main loop
 	bool running = true;
