@@ -475,9 +475,10 @@ void renderWaterfall(const char *name, float height, float amplitude, float angl
 	ImVec2 windowPadding = style.WindowPadding;
 
 	if (height < 0.f)
-		height = ImGui::GetWindowSize().y - windowPadding.y - padding.y;
+		height = ImGui::GetContentRegionAvail().y - windowPadding.y - padding.y;
 	ImVec2 size = ImVec2(ImGui::CalcItemWidth(), height);
 	ImRect box = ImRect(window->DC.CursorPos, window->DC.CursorPos + size);
+
 	ImRect inner = ImRect(box.Min + style.FramePadding, box.Max - style.FramePadding);
 
 	ImGui::PushClipRect(box.Min, box.Max, true);
