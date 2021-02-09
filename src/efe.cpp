@@ -3,15 +3,17 @@
 
 #include <iostream> // TODO: remove
 
+// I am endebted to Thomas Arashikage, who graciously and generously provided
+// his Perl source code for parsing and writing EFE files, without which I
+// wouldn't have been able to add this feature. Thanks Thomas!
+
 
 #define EFE_HEADERFILE "header.eps"
-#define EFE_SAMPLERATE 44100
 #define EFE_GIEBLERSIZE 512
 #define EFE_INSTDATASIZE 656
 #define EFE_WS_HEADERSIZE 288
 #define EFE_EPS_BLOCKSIZE 512
 #define EFE_LAYERSIZE 224
-
 #define EFE_WS_INFO_OFFSET 238
 
 static std::vector<char> efeBuffer;
