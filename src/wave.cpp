@@ -36,6 +36,8 @@ bool Wave::isClear() {
 }
 
 
+#define PI   3.14159265358979f
+
 void Wave::updatePost() {
 	float out[WAVE_LEN];
 	memcpy(out, samples, sizeof(float) * WAVE_LEN);
@@ -180,6 +182,31 @@ void Wave::updatePost() {
 		}
 	}
 
+	if (zerox) {
+		// float tmp[WAVE_LEN];
+		for (int i = 0; i < 10; i++) {
+			float position = (float)i / 9;
+			// float gain1 = cos(position * 0.5 * PI);
+			float gain2 = sin(position * 0.5 * PI);
+
+			out[i] = (out[i] * gain2);// + (out[WAVE_LEN - 1 - i] * gain1);
+			// tmp[i] = (out[i] * gain2) + (out[WAVE_LEN - 1 - i] * gain1);
+		}
+
+		for (int i = WAVE_LEN - 10; i < WAVE_LEN; i++) {
+			float position = (float)((WAVE_LEN - 1) - i) / 9;
+			// float gain1 = cos(position * 0.5 * PI);
+			float gain2 = sin(position * 0.5 * PI);
+
+			out[i] = (out[i] * gain2);// + (out[(WAVE_LEN - 1) - i] * gain1);
+			// out[i] = (out[i] * gain2) + (out[(WAVE_LEN - 1) - i] * gain1);
+		}
+
+		// for (int i = 0; i < 10; i++) {
+		// 	out[i] = tmp[i];
+		// }
+	}
+
 	// Normalize
 	if (normalize) {
 		float max = -INFINITY;
@@ -321,6 +348,7 @@ void Wave::clearEffects() {
 	memset(effects, 0, sizeof(float) * EFFECTS_LEN);
 	cycle = false;
 	normalize = false;
+	zerox = false;
 	updatePost();
 }
 

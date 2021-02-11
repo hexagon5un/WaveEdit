@@ -792,6 +792,22 @@ void effectPage() {
 				historyPush();
 			}
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Zero-X All")) {
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].zerox = true;
+				currentBank.waves[i].updatePost();
+				historyPush();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Zero-X None")) {
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].zerox = false;
+				currentBank.waves[i].updatePost();
+				historyPush();
+			}
+		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Morph...")) ImGui::OpenPopup("Morph");
