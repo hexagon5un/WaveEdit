@@ -154,6 +154,7 @@ struct Wave {
 	float effects[EFFECTS_LEN];
 	bool cycle;
 	bool normalize;
+	bool phasebash;
 	bool zerox;
 
 	void clear();

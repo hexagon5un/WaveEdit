@@ -808,6 +808,22 @@ void effectPage() {
 				historyPush();
 			}
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("Phasebash All")) {
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].phasebash = true;
+				currentBank.waves[i].updatePost();
+				historyPush();
+			}
+		}
+		ImGui::SameLine();
+		if (ImGui::Button("Phasebash None")) {
+			for (int i = 0; i < BANK_LEN; i++) {
+				currentBank.waves[i].phasebash = false;
+				currentBank.waves[i].updatePost();
+				historyPush();
+			}
+		}
 
 		ImGui::SameLine();
 		if (ImGui::Button("Morph...")) ImGui::OpenPopup("Morph");

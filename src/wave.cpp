@@ -1,6 +1,7 @@
 #include "WaveEdit.hpp"
 #include <string.h>
 #include <sndfile.h>
+#include <float.h>
 
 
 static Wave clipboardWave = {};
@@ -36,7 +37,13 @@ bool Wave::isClear() {
 }
 
 
-#define PI   3.14159265358979f
+#define PI 3.14159265358979f
+#define ZEROX_WIDTH 16
+#define FFT_WIDTH (WAVE_LEN / 2)
+
+#if 0
+static float *hannWindow = nullptr;
+#endif
 
 void Wave::updatePost() {
 	float out[WAVE_LEN];
@@ -182,10 +189,61 @@ void Wave::updatePost() {
 		}
 	}
 
+	if (phasebash) {
+#if 0
+		if (!hannWindow) {
+			hannWindow = new float[FFT_WIDTH];
+			for (int i = 0; i < FFT_WIDTH; i++) {
+			    float multiplier = 0.5 * (1.0 - cos(2.0 * PI * ((float)i / (FFT_WIDTH - 1))));
+			    hannWindow[i] = multiplier;
+					if (hannWindow[i] < FLT_EPSILON) hannWindow[i] = 0.;
+			}
+		}
+#endif
+#if 0
+		float fft[WAVE_LEN];
+		RFFT(out, fft, WAVE_LEN);
+		for (int i = 0; i < WAVE_LEN / 2; i++) {
+			float v = sqrt(fft[2 * i] * fft[2 * i] + fft[2 * i + 1] * fft[2 * i + 1]);
+			v *= i % 2 ? -1. : 1.;
+			//v /= (float)WAVE_LEN / 2;
+			fft[2 * i] = v;
+			fft[2 * i + 1] = 0;
+		}
+		IRFFT(fft, out, WAVE_LEN);
+#else
+		float *tmp = new float[WAVE_LEN]();
+		float *fft = new float[FFT_WIDTH * 2];
+		for (int f = 0; f < WAVE_LEN - (FFT_WIDTH / 2); f += (FFT_WIDTH / 2)) {
+			float *fftmp = new float[FFT_WIDTH * 2](); // zero pad
+			// fill half of the audio buffer, leave 50% for the "tail"
+			for (int i = 0; i < FFT_WIDTH; i++) {
+				fftmp[i] = out[f + i]; // * hannWindow[i];
+			}
+			RFFT(fftmp, fft, FFT_WIDTH * 2);
+			for (int i = 0; i < FFT_WIDTH; i++) {
+				float v = sqrt((fft[2 * i] * fft[2 * i]) + (fft[2 * i + 1] * fft[2 * i + 1])); // magnitude
+				v *= i % 2 ? -1. : 1.; // alternating signs
+				fft[2 * i] = v;
+				fft[2 * i + 1] = 0;
+			}
+			IRFFT(fft, fftmp, FFT_WIDTH * 2);
+			for (int i = 0; i < FFT_WIDTH * 2; i++) {
+				tmp[i] += fftmp[i];
+			}
+		}
+		for (int i = 0; i < WAVE_LEN; i++) {
+			out[i] = tmp[i] / 3.; // average
+		}
+#endif
+		delete[] fft;
+		delete[] tmp;
+	}
+
 	if (zerox) {
 		// float tmp[WAVE_LEN];
-		for (int i = 0; i < 10; i++) {
-			float position = (float)i / 9;
+		for (int i = 0; i < ZEROX_WIDTH; i++) {
+			float position = (float)i / (ZEROX_WIDTH - 1);
 			// float gain1 = cos(position * 0.5 * PI);
 			float gain2 = sin(position * 0.5 * PI);
 
@@ -193,8 +251,8 @@ void Wave::updatePost() {
 			// tmp[i] = (out[i] * gain2) + (out[WAVE_LEN - 1 - i] * gain1);
 		}
 
-		for (int i = WAVE_LEN - 10; i < WAVE_LEN; i++) {
-			float position = (float)((WAVE_LEN - 1) - i) / 9;
+		for (int i = WAVE_LEN - ZEROX_WIDTH; i < WAVE_LEN; i++) {
+			float position = (float)((WAVE_LEN - 1) - i) / (ZEROX_WIDTH - 1);
 			// float gain1 = cos(position * 0.5 * PI);
 			float gain2 = sin(position * 0.5 * PI);
 
@@ -349,6 +407,7 @@ void Wave::clearEffects() {
 	cycle = false;
 	normalize = false;
 	zerox = false;
+	phasebash = false;
 	updatePost();
 }
 
