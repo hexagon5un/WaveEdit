@@ -275,8 +275,11 @@ void Wave::updatePost() {
 		}
 
 		if (max - min >= 1e-6) {
+			float amin = abs(min);
+			float amax = abs(max);
+			float bigger = amin > amax  ? amin : amax;
 			for (int i = 0; i < WAVE_LEN; i++) {
-				out[i] = rescalef(out[i], min, max, -1.0, 1.0);
+				out[i] = rescalef(out[i], -bigger, bigger, -1.0, 1.0);
 			}
 		}
 		else {
