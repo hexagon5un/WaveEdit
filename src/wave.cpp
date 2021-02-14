@@ -185,6 +185,8 @@ void Wave::updatePost() {
 		}
 	}
 
+	// Miller Puckette "phase bash" centers phase=0 in the frame
+	// http://msp.ucsd.edu/techniques/v0.11/book-html/node177.html
 	if (phasebash) {
 #if 0
 		float fft[WAVE_LEN];
