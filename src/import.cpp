@@ -168,6 +168,7 @@ static void computeImport(float *samples) {
 
 
 void importPage() {
+	importBank.setBankLen(currentBank.getBankLen());
 	ImGui::BeginChild("Import", ImVec2(0, 0), true);
 	{
 		ImGui::PushItemWidth(-1.0);
