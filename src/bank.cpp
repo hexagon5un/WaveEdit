@@ -172,3 +172,72 @@ void Bank::saveWaves(const char *dirname) {
 		waves[b].saveWAV(filename);
 	}
 }
+
+bool Bank::allInCycle() {
+	for (int i = 0; i < BANK_LEN; i++) {
+		if (!waves[i].cycle) return false;
+	}
+	return true;
+}
+
+
+bool Bank::allInNormalize() {
+	for (int i = 0; i < BANK_LEN; i++) {
+		if (!waves[i].normalize) return false;
+	}
+	return true;
+}
+
+
+bool Bank::allInZerox() {
+	for (int i = 0; i < BANK_LEN; i++) {
+		if (!waves[i].zerox) return false;
+	}
+	return true;
+}
+
+
+bool Bank::allInPhaseBash() {
+	for (int i = 0; i < BANK_LEN; i++) {
+		if (!waves[i].phasebash) return false;
+	}
+	return true;
+}
+
+
+void Bank::cycleAll(bool way) {
+	for (int i = 0; i < BANK_LEN; i++) {
+		waves[i].cycle = way;
+		waves[i].updatePost();
+		historyPush();
+	}
+}
+
+
+void Bank::normalizeAll(bool way) {
+	for (int i = 0; i < BANK_LEN; i++) {
+		waves[i].normalize = way;
+		waves[i].updatePost();
+		historyPush();
+	}
+}
+
+
+void Bank::zeroxAll(bool way) {
+	for (int i = 0; i < BANK_LEN; i++) {
+		waves[i].zerox = way;
+		waves[i].updatePost();
+		historyPush();
+	}
+}
+
+
+void Bank::phaseBashAll(bool way) {
+	for (int i = 0; i < BANK_LEN; i++) {
+		waves[i].phasebash = way;
+		waves[i].updatePost();
+		historyPush();
+	}
+}
+
+

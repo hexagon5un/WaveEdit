@@ -761,71 +761,33 @@ void effectPage() {
 		ImGui::BeginGroup();
 		ImGui::Indent();
 
-		if (ImGui::Button("Cycle All")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].cycle = true;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
+		ImGui::TextUnformatted("All: ");
+		ImGui::SameLine();
+		bool cycle = currentBank.allInCycle();
+		if (ImGui::Checkbox("Cycle", &cycle)) {
+			currentBank.cycleAll(cycle);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Cycle None")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].cycle = false;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
+		bool normalize = currentBank.allInNormalize();
+		if (ImGui::Checkbox("Normalize", &normalize)) {
+			currentBank.normalizeAll(normalize);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Normalize All")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].normalize = true;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
+		bool zerox = currentBank.allInZerox();
+		if (ImGui::Checkbox("Zero-X", &zerox)) {
+			currentBank.zeroxAll(zerox);
 		}
 		ImGui::SameLine();
-		if (ImGui::Button("Normalize None")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].normalize = false;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
+		bool phasebash = currentBank.allInPhaseBash();
+		if (ImGui::Checkbox("Phasebash", &phasebash)) {
+			currentBank.phaseBashAll(phasebash);
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("Zero-X All")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].zerox = true;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Zero-X None")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].zerox = false;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Phasebash All")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].phasebash = true;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
-		}
-		ImGui::SameLine();
-		if (ImGui::Button("Phasebash None")) {
-			for (int i = 0; i < BANK_LEN; i++) {
-				currentBank.waves[i].phasebash = false;
-				currentBank.waves[i].updatePost();
-				historyPush();
-			}
-		}
+		ImGui::EndGroup();
 
 		ImGui::SameLine();
+		ImGui::BeginGroup();
+		ImGui::Indent();
+
 		if (ImGui::Button("Morph...")) ImGui::OpenPopup("Morph");
 		if (ImGui::BeginPopup("Morph")) {
 			for (const std::string &morphOperation : morphOperations) {

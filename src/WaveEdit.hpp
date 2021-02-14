@@ -218,6 +218,16 @@ struct Bank {
 	/** Save EFE file for Transwave */
 	void saveEFE(const char *filename);
 
+	bool allInCycle();
+	bool allInNormalize();
+	bool allInZerox();
+	bool allInPhaseBash();
+
+	void cycleAll(bool way);
+	void normalizeAll(bool way);
+	void zeroxAll(bool way);
+	void phaseBashAll(bool way);
+
 	Bank() : bankLen{BANK_LEN_MAX} {}
 
 };
