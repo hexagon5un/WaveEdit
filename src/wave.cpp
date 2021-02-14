@@ -1,7 +1,6 @@
 #include "WaveEdit.hpp"
 #include <string.h>
 #include <sndfile.h>
-#include <float.h>
 
 
 static Wave clipboardWave = {};
@@ -41,9 +40,6 @@ bool Wave::isClear() {
 #define ZEROX_WIDTH 16
 #define FFT_WIDTH (WAVE_LEN / 2)
 
-#if 0
-static float *hannWindow = nullptr;
-#endif
 
 void Wave::updatePost() {
 	float out[WAVE_LEN];
@@ -191,16 +187,6 @@ void Wave::updatePost() {
 
 	if (phasebash) {
 #if 0
-		if (!hannWindow) {
-			hannWindow = new float[FFT_WIDTH];
-			for (int i = 0; i < FFT_WIDTH; i++) {
-			    float multiplier = 0.5 * (1.0 - cos(2.0 * PI * ((float)i / (FFT_WIDTH - 1))));
-			    hannWindow[i] = multiplier;
-					if (hannWindow[i] < FLT_EPSILON) hannWindow[i] = 0.;
-			}
-		}
-#endif
-#if 0
 		float fft[WAVE_LEN];
 		RFFT(out, fft, WAVE_LEN);
 		for (int i = 0; i < WAVE_LEN / 2; i++) {
@@ -218,7 +204,7 @@ void Wave::updatePost() {
 			float *fftmp = new float[FFT_WIDTH * 2](); // zero pad
 			// fill half of the audio buffer, leave 50% for the "tail"
 			for (int i = 0; i < FFT_WIDTH; i++) {
-				fftmp[i] = out[f + i]; // * hannWindow[i];
+				fftmp[i] = out[f + i];
 			}
 			RFFT(fftmp, fft, FFT_WIDTH * 2);
 			for (int i = 0; i < FFT_WIDTH; i++) {
