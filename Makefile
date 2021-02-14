@@ -1,4 +1,4 @@
-VERSION = TW_0.4
+VERSION = TW_0.5
 
 FLAGS = -Wall -Wextra -Wno-unused-parameter -g -Wno-unused -O3 -march=nocona -ffast-math \
 	-DVERSION=$(VERSION) -DPFFFT_SIMD_DISABLE \
@@ -31,9 +31,9 @@ ifeq ($(ARCH),lin)
 else ifeq ($(ARCH),mac)
 	# Mac
 	FLAGS += -DARCH_MAC \
-		-mmacosx-version-min=10.11
+		-mmacosx-version-min=10.8
 	CXXFLAGS += -stdlib=libc++
-	LDFLAGS += -mmacosx-version-min=10.11 \
+	LDFLAGS += -mmacosx-version-min=10.8 \
 		-stdlib=libc++ -lpthread \
 		-framework Cocoa -framework OpenGL -framework IOKit -framework CoreVideo \
 		-Ldep/lib -lSDL2 -lsamplerate -lsndfile -ljansson -lcurl
