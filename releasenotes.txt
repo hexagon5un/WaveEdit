@@ -1,3 +1,27 @@
+vTW_0.5
+=======
+
+- New "effect" Phase Bash. This is a technique described by Miller 
+  Puckette (Pd) in his Theory and Technique of Electronic Music
+  (http://msp.ucsd.edu/techniques/v0.11/book-html/node177.html) which
+  uses frequency-domain processing to re-phase audio with the phase 
+  start in the middle of the audio frame. This "phase bashing" creates
+  frames which are significantly more Transwave-compatible, particularly
+  when using normal audio as the wavetable source.
+
+- New "effect" Zero-X, introduces a 32-sample power fade to 0 at the 
+  frame edges. Transwave wavetables are expected to have zero-crossings
+  at the frame boundaries to (help) avoid clicking.
+
+- Normalization could introduce a DC offset, fixed to prevent this.
+
+- Import operation could cause a reduced bank length to reset. Fixed.
+
+- UI adjustments (improvements?) in the Effect Editor pane, now using
+  checkboxes instead of two buttons per "All" operation.
+
+- (macOS): minimum OS version reduced to 10.8 (from 10.11)
+
 vTW_0.4
 =======
 
