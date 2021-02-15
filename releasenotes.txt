@@ -9,7 +9,7 @@ vTW_0.5
   frames which are significantly more Transwave-compatible, particularly
   when using normal audio as the wavetable source.
 
-- New "effect" Zero-X, introduces a 32-sample power fade to 0 at the 
+- New "effect" Zero-X, introduces a 16-sample power fade to 0 at the 
   frame edges. Transwave wavetables are expected to have zero-crossings
   at the frame boundaries to (help) avoid clicking.
 
