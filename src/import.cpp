@@ -292,6 +292,7 @@ void importPage() {
 			}
 			ImGui::SameLine();
 			if (ImGui::Button("Import")) {
+				setGlobalBankLen(importBank.getBankLen());
 				currentBank = importBank;
 				for (int i = 0; i < BANK_LEN; i++) {
 					currentBank.waves[i].cycle = true;
