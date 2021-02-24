@@ -453,7 +453,7 @@ void dbPage() {
 						bankEntryOther.loaded = false;
 					}
 					bankEntry.loaded = true;
-					setGlobalBankLen(DB_BANK_LEN);
+					setGlobalBankLen(DB_BANK_LEN); // sets currentBank.bankLen
 					currentBank.setSamples(bankEntry.samples);
 					historyPush();
 				}

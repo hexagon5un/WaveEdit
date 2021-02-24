@@ -1,6 +1,7 @@
 #include "WaveEdit.hpp"
 #include <string.h>
 #include <sndfile.h>
+#include <fstream>
 
 
 int userBankLen = BANK_LEN_MAX;
@@ -32,7 +33,7 @@ void Bank::clear() {
 	// The lazy way
 	memset(waves, 0, sizeof(waves));
 
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < BANK_LEN_MAX; i++) {
 		waves[i].commitSamples();
 	}
 }
@@ -46,7 +47,7 @@ void Bank::swap(int i, int j) {
 
 
 void Bank::shuffle() {
-	for (int j = BANK_LEN - 1; j >= 3; j--) {
+	for (int j = getBankLen() - 1; j >= 3; j--) {
 		int i = rand() % j;
 		swap(i, j);
 	}
@@ -54,7 +55,7 @@ void Bank::shuffle() {
 
 
 void Bank::setSamples(const float *in) {
-	for (int j = 0; j < BANK_LEN; j++) {
+	for (int j = 0; j < getBankLen(); j++) {
 		memcpy(waves[j].samples, &in[j * WAVE_LEN], sizeof(float) * WAVE_LEN);
 		waves[j].commitSamples();
 	}
@@ -62,14 +63,14 @@ void Bank::setSamples(const float *in) {
 
 
 void Bank::getPostSamples(float *out) {
-	for (int j = 0; j < BANK_LEN; j++) {
+	for (int j = 0; j < getBankLen(); j++) {
 		memcpy(&out[j * WAVE_LEN], waves[j].postSamples, sizeof(float) * WAVE_LEN);
 	}
 }
 
 
 void Bank::duplicateToAll(int waveId) {
-	for (int j = 0; j < BANK_LEN; j++) {
+	for (int j = 0; j < BANK_LEN_MAX; j++) {
 		if (j != waveId)
 			waves[j] = waves[waveId];
 		// No need to commit the wave because we're copying everything
@@ -111,7 +112,7 @@ void Bank::saveWAV(const char *filename) {
 	if (!sf)
 		return;
 
-	for (int j = 0; j < BANK_LEN; j++) {
+	for (int j = 0; j < getBankLen(); j++) {
 		sf_write_float(sf, waves[j].postSamples, WAVE_LEN);
 	}
 	sf_write_float(sf, waves[0].postSamples, 1); // + 1 sample from the start
@@ -119,7 +120,7 @@ void Bank::saveWAV(const char *filename) {
 	sf_close(sf);
 }
 
-#include <fstream>
+
 void Bank::saveEFE(const char *filename) {
 	std::string tmpName{filename};
 	tmpName += "_tmp.wav";
@@ -132,7 +133,7 @@ void Bank::saveEFE(const char *filename) {
 	if (!sf)
 		return;
 
-	for (int j = 0; j < BANK_LEN; j++) {
+	for (int j = 0; j < getBankLen(); j++) {
 		sf_write_float(sf, waves[j].postSamples, WAVE_LEN);
 	}
 	sf_write_float(sf, waves[0].postSamples, 1); // + 1 sample from the start
@@ -155,7 +156,7 @@ void Bank::loadWAV(const char *filename) {
 	if (!sf)
 		return;
 
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		sf_read_float(sf, waves[i].samples, WAVE_LEN);
 		waves[i].commitSamples();
 	}
@@ -165,7 +166,7 @@ void Bank::loadWAV(const char *filename) {
 
 
 void Bank::saveWaves(const char *dirname) {
-	for (int b = 0; b < BANK_LEN; b++) {
+	for (int b = 0; b < getBankLen(); b++) {
 		char filename[1024];
 		snprintf(filename, sizeof(filename), "%s/%02d.wav", dirname, b);
 
@@ -174,7 +175,7 @@ void Bank::saveWaves(const char *dirname) {
 }
 
 bool Bank::allInCycle() {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		if (!waves[i].cycle) return false;
 	}
 	return true;
@@ -182,7 +183,7 @@ bool Bank::allInCycle() {
 
 
 bool Bank::allInNormalize() {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		if (!waves[i].normalize) return false;
 	}
 	return true;
@@ -190,7 +191,7 @@ bool Bank::allInNormalize() {
 
 
 bool Bank::allInZerox() {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		if (!waves[i].zerox) return false;
 	}
 	return true;
@@ -198,7 +199,7 @@ bool Bank::allInZerox() {
 
 
 bool Bank::allInPhaseBash() {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		if (!waves[i].phasebash) return false;
 	}
 	return true;
@@ -206,7 +207,7 @@ bool Bank::allInPhaseBash() {
 
 
 void Bank::cycleAll(bool way) {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		waves[i].cycle = way;
 		waves[i].updatePost();
 		historyPush();
@@ -215,7 +216,7 @@ void Bank::cycleAll(bool way) {
 
 
 void Bank::normalizeAll(bool way) {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		waves[i].normalize = way;
 		waves[i].updatePost();
 		historyPush();
@@ -224,7 +225,7 @@ void Bank::normalizeAll(bool way) {
 
 
 void Bank::zeroxAll(bool way) {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		waves[i].zerox = way;
 		waves[i].updatePost();
 		historyPush();
@@ -233,7 +234,7 @@ void Bank::zeroxAll(bool way) {
 
 
 void Bank::phaseBashAll(bool way) {
-	for (int i = 0; i < BANK_LEN; i++) {
+	for (int i = 0; i < getBankLen(); i++) {
 		waves[i].phasebash = way;
 		waves[i].updatePost();
 		historyPush();

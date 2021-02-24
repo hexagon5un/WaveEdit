@@ -203,7 +203,7 @@ struct Bank {
 	void clear();
 	void swap(int i, int j);
 	void shuffle();
-	/** `in` must be length BANK_LEN * WAVE_LEN */
+	/** `in` must be length getBankLen() * WAVE_LEN */
 	void setSamples(const float *in);
 	void getPostSamples(float *out);
 	void duplicateToAll(int waveId);
